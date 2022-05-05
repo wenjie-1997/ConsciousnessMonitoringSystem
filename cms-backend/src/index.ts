@@ -23,7 +23,6 @@ io.on("connection", (socket: any) => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
-    serialport.close();
   });
 });
 

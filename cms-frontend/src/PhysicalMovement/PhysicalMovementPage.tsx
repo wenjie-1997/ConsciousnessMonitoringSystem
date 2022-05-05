@@ -10,40 +10,45 @@ import {
   ListItemText,
 } from "@mui/material";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import { socket } from "../services/socketService";
+import { io, Socket } from "socket.io-client";
 import { SportsCricketRounded } from "@mui/icons-material";
-
-const data = [
-  { xAcceleration: 0.4, yAcceleration: 0.0, zAcceleration: 0.98 },
-  { xAcceleration: 0.0, yAcceleration: 0.0, zAcceleration: 0.98 },
-  { xAcceleration: 0.3, yAcceleration: 0.12, zAcceleration: 0.89 },
-  { xAcceleration: 0.2, yAcceleration: 0.0, zAcceleration: 1.03 },
-  { xAcceleration: 0.5, yAcceleration: -0.2, zAcceleration: 0.98 },
-  { xAcceleration: 0.2, yAcceleration: 0.0, zAcceleration: 0.9 },
-  { xAcceleration: 0.4, yAcceleration: -0.16, zAcceleration: 0.89 },
-  { xAcceleration: 0.3, yAcceleration: 0, zAcceleration: 0.95 },
-];
 
 const PhysicalMovementPage = () => {
   const [currentXAcceleration, setCurrentXAcceleration] = useState(0);
   const [currentYAcceleration, setCurrentYAcceleration] = useState(0);
   const [currentZAcceleration, setCurrentZAcceleration] = useState(0);
-  useEffect(() => {
-    socket.connect();
+  const [dataQueue, setdataQueue] = useState(
+    new Array(60).fill({ xAcceleration: 0, yAcceleration: 0, zAcceleration: 0 })
+  );
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [chartKey, setChartKey] = useState<string>("");
 
-    socket.on("connect", () => {
-      console.log(socket.id); // ojIckSD2jqNzOqIrAGzL
-    });
-    socket.on("accData", (xAcc, yAcc, zAcc) => {
-      console.log(xAcc, yAcc, zAcc);
-      setCurrentXAcceleration(xAcc);
-      setCurrentYAcceleration(yAcc);
-      setCurrentZAcceleration(zAcc);
-    });
+  useEffect(() => {
+    const newSocket = io(`http://localhost:8000`);
+    setSocket(newSocket);
     return () => {
-      socket.disconnect();
+      newSocket.close();
     };
-  }, []);
+  }, [setSocket]);
+
+  useEffect(() => {
+    if (socket !== null)
+      socket.on("accData", (xAcc: number, yAcc: number, zAcc: number) => {
+        const currentDataQueue = dataQueue;
+        currentDataQueue.push({
+          xAcceleration: xAcc,
+          yAcceleration: yAcc,
+          zAcceleration: zAcc,
+        });
+        currentDataQueue.shift();
+        setCurrentXAcceleration(xAcc);
+        setCurrentYAcceleration(yAcc);
+        setCurrentZAcceleration(zAcc);
+        console.log(currentDataQueue);
+        setdataQueue(currentDataQueue);
+        setChartKey(new Date().toISOString());
+      });
+  }, [socket]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -151,7 +156,7 @@ const PhysicalMovementPage = () => {
                         x:{"  "}
                       </p>
                       <p style={{ fontSize: "55px", lineHeight: 0.7 }}>
-                        {currentXAcceleration}
+                        {currentXAcceleration.toFixed(2)}
                       </p>
                     </div>
                     <div
@@ -184,7 +189,7 @@ const PhysicalMovementPage = () => {
                         y:{"  "}
                       </p>
                       <p style={{ fontSize: "55px", lineHeight: 0.7 }}>
-                        {currentYAcceleration}
+                        {currentYAcceleration.toFixed(2)}
                       </p>
                     </div>
                     <div
@@ -217,7 +222,7 @@ const PhysicalMovementPage = () => {
                         z:{"  "}
                       </p>
                       <p style={{ fontSize: "55px", lineHeight: 0.7 }}>
-                        {currentZAcceleration}
+                        {currentZAcceleration.toFixed(2)}
                       </p>
                     </div>
                     <div
@@ -237,10 +242,25 @@ const PhysicalMovementPage = () => {
         </Card>
         <h2 style={{ padding: "15px 0" }}>Visualization</h2>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <LineChart width={600} height={300} data={data}>
-            <Line type="monotone" dataKey="xAcceleration" stroke="#8884d8" />
-            <Line type="monotone" dataKey="yAcceleration" stroke="red" />
-            <Line type="monotone" dataKey="zAcceleration" stroke="green" />
+          <LineChart width={600} height={300} data={dataQueue} key={chartKey}>
+            <Line
+              type="monotone"
+              isAnimationActive={false}
+              dataKey="xAcceleration"
+              stroke="#8884d8"
+            />
+            <Line
+              type="monotone"
+              isAnimationActive={false}
+              dataKey="yAcceleration"
+              stroke="red"
+            />
+            <Line
+              type="monotone"
+              isAnimationActive={false}
+              dataKey="zAcceleration"
+              stroke="green"
+            />
             <XAxis />
             <YAxis />
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />

@@ -19,7 +19,6 @@ io.on("connection", (socket) => {
     console.log("a user connected");
     socket.on("disconnect", () => {
         console.log("user disconnected");
-        serialPort_1.serialport.close();
     });
 });
 serialPort_1.parser.on("data", (data) => {
