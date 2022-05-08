@@ -47,7 +47,7 @@ parser.on("data", async (data: string) => {
 
   const mag = Math.pow(Math.pow(xArr, 2) + Math.pow(yArr, 2) + Math.pow(zArr, 2), 0.5);
 
-  io.emit("accData", xArr, yArr, zArr, mag);
+  io.emit("accData", xArr, yArr, zArr, Math.abs(mag - 0.92));
 });
 
 server.listen(port, () => {
