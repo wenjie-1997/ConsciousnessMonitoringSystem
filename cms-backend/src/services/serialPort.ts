@@ -1,7 +1,12 @@
 import { ReadlineParser, SerialPort } from "serialport";
 
+(async () => {
+  const path = (await SerialPort.list()).find((p) => (p.productId = "7523"))?.path;
+  console.log(path);
+})();
+
 let serialport = new SerialPort({
-  path: "COM7",
+  path: "COM5",
   baudRate: 9600,
 });
 
