@@ -2,8 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parser = exports.serialport = void 0;
 const serialport_1 = require("serialport");
+(async () => {
+    var _a;
+    const path = (_a = (await serialport_1.SerialPort.list()).find((p) => (p.productId = "7523"))) === null || _a === void 0 ? void 0 : _a.path;
+    console.log(path);
+})();
 let serialport = new serialport_1.SerialPort({
-    path: "COM7",
+    path: "COM5",
     baudRate: 9600,
 });
 exports.serialport = serialport;

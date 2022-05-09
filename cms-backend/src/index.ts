@@ -31,21 +31,23 @@ io.on("connection", (socket: any) => {
 
 parser.on("data", async (data: string) => {
   const dataArr = data.replace("\r", "").split(", ");
-  console.log(dataArr);
-
-  //here save to database?
-  await prisma.physicalMovement.create({
-    data: {
-      xAcceleration: 1,
-      yAcceleration: 1,
-      zAcceleration: 1,
-    },
-  });
+  // console.log(dataArr);
 
   const xArr: number = parseFloat(dataArr[0]) || 0;
   const yArr: number = parseFloat(dataArr[1]) || 0;
   const zArr: number = parseFloat(dataArr[2]) || 0;
-  io.emit("accData", xArr, yArr, zArr);
+
+  // await prisma.physicalMovement.create({
+  //   data: {
+  //     xAcceleration: xArr,
+  //     yAcceleration: yArr,
+  //     zAcceleration: zArr,
+  //   },
+  // });
+
+  const mag = Math.pow(Math.pow(xArr, 2) + Math.pow(yArr, 2) + Math.pow(zArr, 2), 0.5);
+
+  io.emit("accData", xArr, yArr, zArr, Math.abs(mag - 0.92));
 });
 
 server.listen(port, () => {
