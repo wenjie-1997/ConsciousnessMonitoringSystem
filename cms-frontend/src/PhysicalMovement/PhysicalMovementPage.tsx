@@ -64,19 +64,19 @@ const PhysicalMovementPage = () => {
           setChart2Key(new Date().toISOString() + "1");
           let average = Math.sqrt(
             dataQueue
-              .slice(44)
+              .slice(49)
               .reduce(
                 (prevValue, curValue) =>
                   prevValue + Math.pow(curValue.magnitude, 2),
                 0
-              ) / 15
+              ) / 10
           );
-          console.log(average);
-          if (average >= 1.1) {
+          if (mag >= 4) {
             setOpenModal(true);
-          } else if (average >= 1) {
+          }
+          if (average >= 1) {
             setMovement("Running");
-          } else if (average >= 0.15) {
+          } else if (average >= 0.1) {
             setMovement("Walking");
           } else {
             setMovement("Stationary");

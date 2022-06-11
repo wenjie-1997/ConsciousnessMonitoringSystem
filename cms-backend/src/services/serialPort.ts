@@ -8,7 +8,7 @@ import { ReadlineParser, SerialPort } from "serialport";
 })();
 
 let serialport = new SerialPort({
-  path: "COM6",
+  path: "COM3",
   baudRate: 9600,
 });
 
