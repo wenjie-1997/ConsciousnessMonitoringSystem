@@ -8,7 +8,7 @@ const serialport_1 = require("serialport");
     console.log(path);
 })();
 let serialport = new serialport_1.SerialPort({
-    path: "COM5",
+    path: "COM6",
     baudRate: 9600,
 });
 exports.serialport = serialport;

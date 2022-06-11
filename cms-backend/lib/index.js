@@ -56,7 +56,7 @@ serialPort_1.parser.on("data", async (data) => {
     //   },
     // });
     const mag = Math.pow(Math.pow(xArr, 2) + Math.pow(yArr, 2) + Math.pow(zArr, 2), 0.5);
-    io.emit("accData", xArr, yArr, zArr, Math.abs(mag - 0.92));
+    io.emit("accData", xArr, yArr, zArr, Math.abs(mag - 0.98));
 });
 server.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
